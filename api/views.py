@@ -48,6 +48,7 @@ def getRoutes(request):
 
 # to get notes from the database
 # in order to render the python objects, we first need to serialize them
+# NOTE: You can add error handling here:
 @api_view(['GET'])
 def getNotes(request):
 	notes = Note.objects.all()  # this returns the list of python objects
@@ -57,7 +58,7 @@ def getNotes(request):
 
 @api_view(['GET'])
 def getNote(request, pk):
-	notes = Note.objects.get(id=pk)
-	serial_class = NoteSerializer(notes, many=False)
+	note = Note.objects.get(id=pk)
+	serial_class = NoteSerializer(note, many=False)
 	
 	return Response(serial_class.data)    
