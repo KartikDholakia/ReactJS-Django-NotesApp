@@ -7,7 +7,7 @@ from api import serializers
 
 # Create your views here.
 
-# decorators: (so as to use functions instead of classes)
+# decorators: (so as to use functions instead of classes) (django rest style of view)
 @api_view(['GET'])      # takes the list of http methods (get, post, put, ...)
 
 def getRoutes(request):
@@ -80,3 +80,10 @@ def updateNote(request, pk):
 		serializer.save()
 
 	return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deleteNote(request, pk):
+	note = Note.objects.get(id=pk)
+	note.delete()
+
+	return Response('Note was Deleted!!')
