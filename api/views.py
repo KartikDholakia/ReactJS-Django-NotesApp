@@ -65,6 +65,17 @@ def getNote(request, pk):
 	
 	return Response(serial_class.data)
 
+@api_view(['POST'])
+def createNote(request):
+	data = request.data		# it will return json object
+	note = Note.objects.create(
+		body=data['body']
+		# created and updated field will automatically get data
+	)
+
+	serializer = NoteSerializer(note, many=False)
+	return Response(serializer.data)
+
 # PUT -> used to update
 # POST -> used to create new entry
 @api_view(['PUT'])
