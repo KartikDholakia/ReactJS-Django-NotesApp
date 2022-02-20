@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Note
 from .serializers import NoteSerializer
+from api import serializers
 
 # Create your views here.
 
-# decorators:
+# decorators: (so as to use functions instead of classes)
 @api_view(['GET'])      # takes the list of http methods (get, post, put, ...)
 
 def getRoutes(request):
@@ -51,7 +52,8 @@ def getRoutes(request):
 # NOTE: You can add error handling here:
 @api_view(['GET'])
 def getNotes(request):
-	notes = Note.objects.all()  # this returns the list of python objects
+	notes = Note.objects.all().order_by('-updated')  # this returns the list of python objects
+	# notes will be ordered in decreasing order of update date
 	serial_class = NoteSerializer(notes, many=True)     # many=True means that we want to serialize multiple objects
 	
 	return Response(serial_class.data)
@@ -61,4 +63,20 @@ def getNote(request, pk):
 	note = Note.objects.get(id=pk)
 	serial_class = NoteSerializer(note, many=False)
 	
-	return Response(serial_class.data)    
+	return Response(serial_class.data)
+
+# PUT -> used to update
+# POST -> used to create new entry
+@api_view(['PUT'])
+def updateNote(request, pk):
+	data = request.data		# we have access to request.data thru django rest framework
+	note = Note.objects.get(id=pk)
+
+	# this will serialize the existing 'note' with data
+	serializer = NoteSerializer(instance=note, data=data)
+
+	# save to database:
+	if serializer.is_valid():
+		serializer.save()
+
+	return Response(serializer.data)
