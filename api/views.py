@@ -1,10 +1,5 @@
-from turtle import update
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Note
-from .serializers import NoteSerializer
-from api import serializers
 from .utils import updateNote, getSingleNote, deleteNote, getNotesList, createNote
 
 """
@@ -63,7 +58,7 @@ def getRoutes(request):
 	return Response(routes)
 
 # Notes -> to get the list of notes from the database and to create a note
-# in order to render the python objects, we first need to serialize them
+# In order to render the python objects, we first need to serialize them
 # NOTE: You can add error handling here:
 @api_view(['GET', 'POST'])
 def Notes(request):
@@ -79,7 +74,7 @@ def Notes(request):
 def getNote(request, pk):
 
 	if request.method == 'GET':
-		return getSingleNote(request, pk)
+		return getSingleNote(pk)
 
 	if request.method == 'PUT':
 		return updateNote(request, pk)

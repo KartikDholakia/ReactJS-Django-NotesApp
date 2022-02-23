@@ -7,7 +7,7 @@ from .models import Note
 from .serializers import NoteSerializer
 
 
-def getSingleNote(request, pk):
+def getSingleNote(pk):
 	note = Note.objects.get(id=pk)
 	serial_class = NoteSerializer(note, many=False)
 	return Response(serial_class.data)
