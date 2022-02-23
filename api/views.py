@@ -1,15 +1,30 @@
+from turtle import update
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Note
 from .serializers import NoteSerializer
 from api import serializers
+from .utils import updateNote, getSingleNote, deleteNote, getNotesList, createNote
 
-# Create your views here.
+"""
+Routes For RESTful APIs:
+/notes GET
+/notes POST
+/notes/<id> GET
+/notes/<id> PUT
+/notes/<id> DELETE
+
+HTTP Methods:
+GET -> to fecth data
+PUT -> used to update
+POST -> used to create new entry
+DELETE -> to delete a record
+"""
 
 # decorators: (so as to use functions instead of classes) (django rest style of view)
-@api_view(['GET'])      # takes the list of http methods (get, post, put, ...)
-
+# takes the list of acceptable http methods (get, post, put, ...)
+@api_view(['GET'])
 def getRoutes(request):
 	
 	routes = [
@@ -47,54 +62,27 @@ def getRoutes(request):
 
 	return Response(routes)
 
-# to get notes from the database
+# Notes -> to get the list of notes from the database and to create a note
 # in order to render the python objects, we first need to serialize them
 # NOTE: You can add error handling here:
-@api_view(['GET'])
-def getNotes(request):
-	notes = Note.objects.all().order_by('-updated')  # this returns the list of python objects
-	# notes will be ordered in decreasing order of update date
-	serial_class = NoteSerializer(notes, many=True)     # many=True means that we want to serialize multiple objects
-	
-	return Response(serial_class.data)
+@api_view(['GET', 'POST'])
+def Notes(request):
 
-@api_view(['GET'])
+	if request.method == 'GET':
+		return getNotesList()
+
+	if request.method == 'POST':
+		return createNote(request)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def getNote(request, pk):
-	note = Note.objects.get(id=pk)
-	serial_class = NoteSerializer(note, many=False)
-	
-	return Response(serial_class.data)
 
-@api_view(['POST'])
-def createNote(request):
-	data = request.data		# it will return json object
-	note = Note.objects.create(
-		body=data['body']
-		# created and updated field will automatically get data
-	)
+	if request.method == 'GET':
+		return getSingleNote(request, pk)
 
-	serializer = NoteSerializer(note, many=False)
-	return Response(serializer.data)
+	if request.method == 'PUT':
+		return updateNote(request, pk)
 
-# PUT -> used to update
-# POST -> used to create new entry
-@api_view(['PUT'])
-def updateNote(request, pk):
-	data = request.data		# we have access to request.data thru django rest framework
-	note = Note.objects.get(id=pk)
-
-	# this will serialize the existing 'note' with data
-	serializer = NoteSerializer(instance=note, data=data)
-
-	# save to database:
-	if serializer.is_valid():
-		serializer.save()
-
-	return Response(serializer.data)
-
-@api_view(['DELETE'])
-def deleteNote(request, pk):
-	note = Note.objects.get(id=pk)
-	note.delete()
-
-	return Response('Note was Deleted!!')
+	if request.method == 'DELETE':
+		return deleteNote(pk)
