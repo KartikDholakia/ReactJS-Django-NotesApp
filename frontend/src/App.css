@@ -15,14 +15,14 @@
 }
 
 .dark {
-  --color-main: #f68657;
-  --color-text: #d6d1d1;
+  --color-main: #FFD700;
+  --color-text: #f5f0f0;
   --color-dark: #f5f6f7;
   --color-gray: #999;
-  --color-bg: #1f2124;
-  --color-lighter: #292a2c;
-  --color-white: #2e3235;
-  --color-border:#252629;
+  --color-bg: #022C43;
+  --color-lighter: #2C394B;
+  --color-white: #334756;
+  --color-border:#052944;
 }
 
 /* BASE STYLES */
